@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # Configuração inicial
-st.title("Controle de Estoque e Caixa para Festa da Macarronada")
+st.title("Controle de Estoque e Caixa para Festa Macarronada")
 
 # Produtos padrão
 produtos_padrao = [
@@ -83,8 +83,11 @@ with st.form(key='del_produto'):
 
 # Exibir produtos disponíveis
 st.subheader("Produtos Disponíveis")
-produtos_df = pd.DataFrame(st.session_state.produtos)
-st.table(produtos_df)
+if st.session_state.produtos:
+    produtos_df = pd.DataFrame(st.session_state.produtos)
+    st.table(produtos_df)
+else:
+    st.write("Nenhum produto disponível.")
 
 # Formulário para registrar uma venda com múltiplos produtos
 with st.form(key='registrar_venda'):
