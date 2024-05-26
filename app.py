@@ -2,13 +2,26 @@ import streamlit as st
 import pandas as pd
 
 # Configuração inicial
-st.title("Controle de Estoque e Caixa para Festa da Macarronada 2024")
+st.title("Controle de Estoque e Caixa para Festa da Macarronada")
+
+# Produtos padrão
+produtos_padrao = [
+    {"nome": "Heineken", "valor": 8.0, "quantidade": 116},
+    {"nome": "Coca Normal", "valor": 6.0, "quantidade": 108},
+    {"nome": "Coca Zero", "valor": 6.0, "quantidade": 36},
+    {"nome": "Sprite", "valor": 6.0, "quantidade": 24},
+    {"nome": "Guaraná Zero", "valor": 6.0, "quantidade": 24},
+    {"nome": "Guaraná Normal", "valor": 6.0, "quantidade": 36},
+    {"nome": "Heineken", "valor": 8.0, "quantidade": 104},
+    {"nome": "Água Normal", "valor": 4.0, "quantidade": 30},
+    {"nome": "Água com Gás", "valor": 4.0, "quantidade": 12},
+    {"nome": "Suco de Uva", "valor": 6.0, "quantidade": 24}
+]
 
 # Sessões de estado para manter o estoque e as vendas
 if "produtos" not in st.session_state:
-    st.session_state.produtos = []
-if "estoque" not in st.session_state:
-    st.session_state.estoque = {}
+    st.session_state.produtos = produtos_padrao.copy()
+    st.session_state.estoque = {produto["nome"]: produto["quantidade"] for produto in produtos_padrao}
 if "vendas" not in st.session_state:
     st.session_state.vendas = []
 if "caixa" not in st.session_state:
