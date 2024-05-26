@@ -6,7 +6,6 @@ st.title("Controle de Estoque e Caixa para Festa Macarronada")
 
 # Produtos padrão
 produtos_padrao = [
-    {"nome": "Heineken", "valor": 8.0, "quantidade": 116},
     {"nome": "Coca Normal", "valor": 6.0, "quantidade": 108},
     {"nome": "Coca Zero", "valor": 6.0, "quantidade": 36},
     {"nome": "Sprite", "valor": 6.0, "quantidade": 24},
