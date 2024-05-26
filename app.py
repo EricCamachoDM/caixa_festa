@@ -19,6 +19,11 @@ def adicionar_produto(nome, valor, quantidade):
     st.session_state.produtos.append({"nome": nome, "valor": valor, "quantidade": quantidade})
     st.session_state.estoque[nome] = quantidade
 
+# Função para deletar produto
+def deletar_produto(nome):
+    st.session_state.produtos = [p for p in st.session_state.produtos if p["nome"] != nome]
+    del st.session_state.estoque[nome]
+
 # Formulário para adicionar novos produtos
 with st.form(key='add_produto'):
     st.subheader("Adicionar Produto")
@@ -31,27 +36,42 @@ with st.form(key='add_produto'):
         adicionar_produto(nome_produto, valor_unitario, quantidade_estoque)
         st.success(f"Produto {nome_produto} adicionado com sucesso!")
 
+# Formulário para deletar produtos
+with st.form(key='del_produto'):
+    st.subheader("Deletar Produto")
+    nome_produto_del = st.selectbox("Selecione o Produto para Deletar", [p["nome"] for p in st.session_state.produtos])
+    delete_button = st.form_submit_button(label="Deletar Produto")
+
+    if delete_button:
+        deletar_produto(nome_produto_del)
+        st.success(f"Produto {nome_produto_del} deletado com sucesso!")
+
 # Exibir produtos disponíveis
 st.subheader("Produtos Disponíveis")
 produtos_df = pd.DataFrame(st.session_state.produtos)
 st.table(produtos_df)
 
-# Formulário para registrar uma venda
+# Formulário para registrar uma venda com múltiplos produtos
 with st.form(key='registrar_venda'):
     st.subheader("Registrar Venda")
-    produto_venda = st.selectbox("Selecione o Produto", [p["nome"] for p in st.session_state.produtos])
-    quantidade_venda = st.number_input("Quantidade", min_value=1, step=1)
+    produtos_venda = {}
+    for produto in st.session_state.produtos:
+        quantidade = st.number_input(f"Quantidade de {produto['nome']}", min_value=0, max_value=st.session_state.estoque[produto["nome"]], step=1)
+        if quantidade > 0:
+            produtos_venda[produto["nome"]] = quantidade
+
     venda_button = st.form_submit_button(label="Registrar Venda")
 
     if venda_button:
-        if st.session_state.estoque[produto_venda] >= quantidade_venda:
-            valor_total = quantidade_venda * next(p["valor"] for p in st.session_state.produtos if p["nome"] == produto_venda)
-            st.session_state.caixa += valor_total
-            st.session_state.estoque[produto_venda] -= quantidade_venda
-            st.session_state.vendas.append({"produto": produto_venda, "quantidade": quantidade_venda, "valor_total": valor_total})
-            st.success(f"Venda registrada: {produto_venda}, Quantidade: {quantidade_venda}, Valor Total: R${valor_total:.2f}")
-        else:
-            st.error("Estoque insuficiente!")
+        valor_total = 0.0
+        for produto, quantidade in produtos_venda.items():
+            valor_produto = next(p["valor"] for p in st.session_state.produtos if p["nome"] == produto)
+            valor_total += quantidade * valor_produto
+            st.session_state.estoque[produto] -= quantidade
+
+        st.session_state.caixa += valor_total
+        st.session_state.vendas.append({"produtos": produtos_venda, "valor_total": valor_total})
+        st.success(f"Venda registrada: {produtos_venda}, Valor Total: R${valor_total:.2f}")
 
 # Exibir vendas realizadas
 st.subheader("Vendas Realizadas")
@@ -61,3 +81,8 @@ st.table(vendas_df)
 # Exibir valor em caixa
 st.subheader("Caixa")
 st.write(f"Valor em Caixa: R${st.session_state.caixa:.2f}")
+
+# Exibir estoque atual
+st.subheader("Estoque Atual")
+estoque_df = pd.DataFrame.from_dict(st.session_state.estoque, orient='index', columns=['Quantidade'])
+st.table(estoque_df)
