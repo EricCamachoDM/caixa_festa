@@ -32,9 +32,10 @@ def registrar_venda(produtos_venda):
         valor_total += quantidade * valor_produto
         st.session_state.estoque[produto] -= quantidade
 
+    venda_id = len(st.session_state.vendas) + 1
     st.session_state.caixa += valor_total
-    st.session_state.vendas.append({"id": len(st.session_state.vendas) + 1, "produtos": produtos_venda, "valor_total": valor_total})
-    return valor_total
+    st.session_state.vendas.append({"id": venda_id, "produtos": produtos_venda, "valor_total": valor_total})
+    return venda_id, valor_total
 
 # Função para deletar venda
 def deletar_venda(venda_id):
@@ -85,8 +86,8 @@ with st.form(key='registrar_venda'):
 
     if venda_button:
         if produtos_venda:
-            valor_total = registrar_venda(produtos_venda)
-            st.success(f"Venda registrada com sucesso! Valor Total: R${valor_total:.2f}")
+            venda_id, valor_total = registrar_venda(produtos_venda)
+            st.success(f"Venda registrada com sucesso! ID da Venda: {venda_id}, Valor Total: R${valor_total:.2f}")
         else:
             st.warning("Nenhum produto selecionado.")
 
