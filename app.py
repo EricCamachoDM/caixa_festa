@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # Configuração inicial
-st.title("Controle de Estoque e Caixa para Festa Beneficente")
+st.title("Controle de Estoque e Caixa para Festa da Macarronada 2024")
 
 # Sessões de estado para manter o estoque e as vendas
 if "produtos" not in st.session_state:
