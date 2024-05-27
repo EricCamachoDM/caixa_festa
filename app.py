@@ -95,7 +95,7 @@ with tab2:
                 st.warning("Nenhum produto selecionado.")
 
 with tab3:
-   st.subheader("Vendas Realizadas")
+    st.subheader("Vendas Realizadas")
     vendas_formatadas = []
     for venda in st.session_state.vendas:
         produtos_formatados = ", ".join([f"{produto} ({quantidade})" for produto, quantidade in venda["produtos"].items()])
