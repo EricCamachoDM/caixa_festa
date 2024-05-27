@@ -1,9 +1,7 @@
-!pip install fpdf
-
 import streamlit as st
 import pandas as pd
-from fpdf import FPDF
-from io import BytesIO
+import csv
+from io import StringIO
 
 # Configuração inicial
 st.title("Controle de Estoque e Caixa para Festa Macarronada")
