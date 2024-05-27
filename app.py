@@ -8,7 +8,6 @@ st.title("Controle de Estoque e Caixa para Festa Macarronada")
 
 # Produtos padrão
 produtos_padrao = [
-    {"nome": "Heineken", "valor": 8.0, "quantidade": 116},
     {"nome": "Coca Normal", "valor": 6.0, "quantidade": 108},
     {"nome": "Coca Zero", "valor": 6.0, "quantidade": 36},
     {"nome": "Sprite", "valor": 6.0, "quantidade": 24},
@@ -17,7 +16,9 @@ produtos_padrao = [
     {"nome": "Heineken", "valor": 8.0, "quantidade": 104},
     {"nome": "Água Normal", "valor": 4.0, "quantidade": 30},
     {"nome": "Água com Gás", "valor": 4.0, "quantidade": 12},
-    {"nome": "Suco de Uva", "valor": 6.0, "quantidade": 24}
+    {"nome": "Suco de Uva", "valor": 6.0, "quantidade": 24},
+    {"nome": "Sorvete de Chocolate", "valor": 4.0, "quantidade": 35},
+    {"nome": "Sorvete de Leite Condensado", "valor": 4.0, "quantidade": 35}
 ]
 
 # Sessões de estado para manter o estoque e as vendas
