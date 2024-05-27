@@ -6,6 +6,7 @@ st.title("Controle de Estoque e Caixa para Festa Macarronada")
 
 # Produtos padrão
 produtos_padrao = [
+    {"nome": "Heineken", "valor": 8.0, "quantidade": 116},
     {"nome": "Coca Normal", "valor": 6.0, "quantidade": 108},
     {"nome": "Coca Zero", "valor": 6.0, "quantidade": 36},
     {"nome": "Sprite", "valor": 6.0, "quantidade": 24},
@@ -14,10 +15,7 @@ produtos_padrao = [
     {"nome": "Heineken", "valor": 8.0, "quantidade": 104},
     {"nome": "Água Normal", "valor": 4.0, "quantidade": 30},
     {"nome": "Água com Gás", "valor": 4.0, "quantidade": 12},
-    {"nome": "Suco de Uva", "valor": 6.0, "quantidade": 24},
-    {"nome": "Sorvete de Chocolate", "valor": 4.0, "quantidade": 35},
-    {"nome": "Sorvete de Leite Condensado", "valor": 4.0, "quantidade": 35},
-    
+    {"nome": "Suco de Uva", "valor": 6.0, "quantidade": 24}
 ]
 
 # Sessões de estado para manter o estoque e as vendas
@@ -61,81 +59,81 @@ def deletar_venda(venda_id):
     st.session_state.caixa -= venda["valor_total"]
     st.session_state.vendas = [v for v in st.session_state.vendas if v["id"] != venda_id]
 
-# Formulário para adicionar novos produtos
-with st.form(key='add_produto'):
-    st.subheader("Adicionar Produto")
-    nome_produto = st.text_input("Nome do Produto")
-    valor_unitario = st.number_input("Valor Unitário", min_value=0.0, format="%.2f")
-    quantidade_estoque = st.number_input("Quantidade em Estoque", min_value=0, step=1)
-    submit_button = st.form_submit_button(label="Adicionar Produto")
+# Criação das abas
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["Produtos e Caixa", "Registrar Venda", "Vendas", "Estoque", "Gerenciar Produtos"])
 
-    if submit_button:
-        adicionar_produto(nome_produto, valor_unitario, quantidade_estoque)
-        st.success(f"Produto {nome_produto} adicionado com sucesso!")
+with tab1:
+    st.subheader("Produtos Disponíveis")
+    if st.session_state.produtos:
+        produtos_df = pd.DataFrame(st.session_state.produtos)
+        st.table(produtos_df)
+    else:
+        st.write("Nenhum produto disponível.")
+    
+    st.subheader("Caixa")
+    st.write(f"Valor em Caixa: R${st.session_state.caixa:.2f}")
 
-# Formulário para deletar produtos
-with st.form(key='del_produto'):
-    st.subheader("Deletar Produto")
-    nome_produto_del = st.selectbox("Selecione o Produto para Deletar", [p["nome"] for p in st.session_state.produtos])
-    delete_button = st.form_submit_button(label="Deletar Produto")
-
-    if delete_button:
-        deletar_produto(nome_produto_del)
-        st.success(f"Produto {nome_produto_del} deletado com sucesso!")
-
-# Exibir produtos disponíveis
-st.subheader("Produtos Disponíveis")
-if st.session_state.produtos:
-    produtos_df = pd.DataFrame(st.session_state.produtos)
-    st.table(produtos_df)
-else:
-    st.write("Nenhum produto disponível.")
-
-# Formulário para registrar uma venda com múltiplos produtos
-with st.form(key='registrar_venda'):
+with tab2:
     st.subheader("Registrar Venda")
-    produtos_venda = {}
-    for produto in st.session_state.produtos:
-        quantidade = st.number_input(f"Quantidade de {produto['nome']}", min_value=0, max_value=st.session_state.estoque[produto["nome"]], step=1)
-        if quantidade > 0:
-            produtos_venda[produto["nome"]] = quantidade
+    with st.form(key='registrar_venda'):
+        produtos_venda = {}
+        for produto in st.session_state.produtos:
+            quantidade = st.number_input(f"Quantidade de {produto['nome']}", min_value=0, max_value=st.session_state.estoque[produto["nome"]], step=1)
+            if quantidade > 0:
+                produtos_venda[produto["nome"]] = quantidade
 
-    venda_button = st.form_submit_button(label="Registrar Venda")
+        venda_button = st.form_submit_button(label="Registrar Venda")
 
-    if venda_button:
-        if produtos_venda:
-            venda_id, valor_total = registrar_venda(produtos_venda)
-            st.success(f"Venda registrada com sucesso! ID da Venda: {venda_id}, Valor Total: R${valor_total:.2f}")
-        else:
-            st.warning("Nenhum produto selecionado.")
+        if venda_button:
+            if produtos_venda:
+                venda_id, valor_total = registrar_venda(produtos_venda)
+                st.success(f"Venda registrada com sucesso! ID da Venda: {venda_id}, Valor Total: R${valor_total:.2f}")
+            else:
+                st.warning("Nenhum produto selecionado.")
 
-# Exibir vendas realizadas
-st.subheader("Vendas Realizadas")
-vendas_formatadas = []
-for venda in st.session_state.vendas:
-    produtos_formatados = ", ".join([f"{produto} ({quantidade})" for produto, quantidade in venda["produtos"].items()])
-    vendas_formatadas.append({"ID": venda["id"], "Produtos": produtos_formatados, "Valor Total": f"R${venda['valor_total']:.2f}"})
-vendas_df = pd.DataFrame(vendas_formatadas)
-st.table(vendas_df)
+with tab3:
+    st.subheader("Vendas Realizadas")
+    vendas_formatadas = []
+    for venda in st.session_state.vendas:
+        produtos_formatados = ", ".join([f"{produto} ({quantidade})" for produto, quantidade in venda["produtos"].items()])
+        vendas_formatadas.append({"ID": venda["id"], "Produtos": produtos_formatados, "Valor Total": f"R${venda['valor_total']:.2f}"})
+    vendas_df = pd.DataFrame(vendas_formatadas)
+    st.table(vendas_df)
 
-# Formulário para deletar vendas
-with st.form(key='del_venda'):
     st.subheader("Deletar Venda")
-    venda_id_del = st.number_input("ID da Venda para Deletar", min_value=1, step=1)
-    delete_venda_button = st.form_submit_button(label="Deletar Venda")
+    with st.form(key='del_venda'):
+        venda_id_del = st.number_input("ID da Venda para Deletar", min_value=1, step=1)
+        delete_venda_button = st.form_submit_button(label="Deletar Venda")
 
-    if delete_venda_button:
-        if any(v["id"] == venda_id_del for v in st.session_state.vendas):
-            deletar_venda(venda_id_del)
-            st.success(f"Venda ID {venda_id_del} deletada com sucesso!")
-        else:
-            st.warning("ID da venda não encontrado.")
+        if delete_venda_button:
+            if any(v["id"] == venda_id_del for v in st.session_state.vendas):
+                deletar_venda(venda_id_del)
+                st.success(f"Venda ID {venda_id_del} deletada com sucesso!")
+            else:
+                st.warning("ID da venda não encontrado.")
 
-# Exibir valor em caixa
-st.subheader("Caixa")
-st.write(f"Valor em Caixa: R${st.session_state.caixa:.2f}")
+with tab4:
+    st.subheader("Estoque Atual")
+    estoque_df = pd.DataFrame.from_dict(st.session_state.estoque, orient='index', columns=['Quantidade'])
+    st.table(estoque_df)
 
-# Exibir estoque atual
-st.subheader("Estoque Atual")
-estoque_df = pd.DataFrame.from_dict(st.session_state.estoque, orient='index', columns=['Quantidade'])
-st.table(estoque_df)
+with tab5:
+    st.subheader("Adicionar Produto")
+    with st.form(key='add_produto'):
+        nome_produto = st.text_input("Nome do Produto")
+        valor_unitario = st.number_input("Valor Unitário", min_value=0.0, format="%.2f")
+        quantidade_estoque = st.number_input("Quantidade em Estoque", min_value=0, step=1)
+        submit_button = st.form_submit_button(label="Adicionar Produto")
+
+        if submit_button:
+            adicionar_produto(nome_produto, valor_unitario, quantidade_estoque)
+            st.success(f"Produto {nome_produto} adicionado com sucesso!")
+
+    st.subheader("Deletar Produto")
+    with st.form(key='del_produto'):
+        nome_produto_del = st.selectbox("Selecione o Produto para Deletar", [p["nome"] for p in st.session_state.produtos])
+        delete_button = st.form_submit_button(label="Deletar Produto")
+
+        if delete_button:
+            deletar_produto(nome_produto_del)
+            st.success(f"Produto {nome_produto_del} deletado com sucesso!")
