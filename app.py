@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+from fpdf import FPDF
+from io import BytesIO
 
 # Configuração inicial
 st.title("Controle de Estoque e Caixa para Festa Macarronada")
@@ -66,6 +68,7 @@ with tab1:
     st.subheader("Produtos Disponíveis")
     if st.session_state.produtos:
         produtos_df = pd.DataFrame(st.session_state.produtos)
+        produtos_df['valor'] = produtos_df['valor'].apply(lambda x: f"R${x:.2f}")
         st.table(produtos_df)
     else:
         st.write("Nenhum produto disponível.")
@@ -100,6 +103,24 @@ with tab3:
     vendas_df = pd.DataFrame(vendas_formatadas)
     st.table(vendas_df)
 
+    def gerar_pdf(vendas_df):
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        pdf.cell(200, 10, txt="Vendas Realizadas", ln=True, align="C")
+        
+        for index, row in vendas_df.iterrows():
+            pdf.cell(200, 10, txt=f"ID: {row['ID']}, Produtos: {row['Produtos']}, Valor Total: {row['Valor Total']}", ln=True)
+        
+        return pdf
+
+    if st.button("Gerar PDF das Vendas"):
+        pdf = gerar_pdf(vendas_df)
+        pdf_output = BytesIO()
+        pdf.output(pdf_output)
+        pdf_output.seek(0)
+        
+        st.download_button(label="Baixar PDF", data=pdf_output, file_name="vendas_realizadas.pdf", mime="application/pdf")
     st.subheader("Deletar Venda")
     with st.form(key='del_venda'):
         venda_id_del = st.number_input("ID da Venda para Deletar", min_value=1, step=1)
