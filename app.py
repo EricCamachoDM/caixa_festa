@@ -97,7 +97,7 @@ with tab2:
                 st.warning("Nenhum produto selecionado.")
 
 with tab3:
-    st.subheader("Vendas Realizadas")
+   st.subheader("Vendas Realizadas")
     vendas_formatadas = []
     for venda in st.session_state.vendas:
         produtos_formatados = ", ".join([f"{produto} ({quantidade})" for produto, quantidade in venda["produtos"].items()])
@@ -105,24 +105,18 @@ with tab3:
     vendas_df = pd.DataFrame(vendas_formatadas)
     st.table(vendas_df)
 
-    def gerar_pdf(vendas_df):
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
-        pdf.cell(200, 10, txt="Vendas Realizadas", ln=True, align="C")
-        
+    def gerar_csv(vendas_df):
+        csv_output = StringIO()
+        writer = csv.writer(csv_output)
+        writer.writerow(vendas_df.columns)
         for index, row in vendas_df.iterrows():
-            pdf.cell(200, 10, txt=f"ID: {row['ID']}, Produtos: {row['Produtos']}, Valor Total: {row['Valor Total']}", ln=True)
-        
-        return pdf
+            writer.writerow(row)
+        return csv_output.getvalue()
 
-    if st.button("Gerar PDF das Vendas"):
-        pdf = gerar_pdf(vendas_df)
-        pdf_output = BytesIO()
-        pdf.output(pdf_output)
-        pdf_output.seek(0)
+    if st.button("Gerar CSV das Vendas"):
+        csv_data = gerar_csv(vendas_df)
+        st.download_button(label="Baixar CSV", data=csv_data, file_name="vendas_realizadas.csv", mime="text/csv")
         
-        st.download_button(label="Baixar PDF", data=pdf_output, file_name="vendas_realizadas.pdf", mime="application/pdf")
     st.subheader("Deletar Venda")
     with st.form(key='del_venda'):
         venda_id_del = st.number_input("ID da Venda para Deletar", min_value=1, step=1)
