@@ -8,7 +8,7 @@ import os
 
 # --- Configurações e Constantes ---
 APP_TITLE = "Controle de Estoque e Caixa (DB Compartilhado)"
-GITHUB_CSV_URL = "https://raw.githubusercontent.com/EricCamachoDM/caixa_festa/main/produtos_estoque.csv"
+GITHUB_CSV_URL = "https://raw.githubusercontent.com/EricCamachoDM/caixa_festa/refs/heads/main/produtos_estoque.csv"
 DATABASE_FILE = "festa_macarronada.db" 
 
 # --- Funções de Banco de Dados ---
