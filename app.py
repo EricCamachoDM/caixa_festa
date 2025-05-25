@@ -4,13 +4,12 @@ import requests
 from io import StringIO
 from datetime import datetime
 import sqlite3
-import os # Para verificar se o DB existe
+import os 
 
 # --- Configurações e Constantes ---
 APP_TITLE = "Controle de Estoque e Caixa (DB Compartilhado)"
-# SUBSTITUA PELA URL RAW DO SEU ARQUIVO CSV NO GITHUB
 GITHUB_CSV_URL = "https://raw.githubusercontent.com/EricCamachoDM/caixa_festa/main/produtos_estoque.csv"
-DATABASE_FILE = "festa_macarronada.db" # Nome do arquivo do banco de dados
+DATABASE_FILE = "festa_macarronada.db" 
 
 # --- Funções de Banco de Dados ---
 
@@ -104,14 +103,6 @@ def sincronizar_csv_com_bd(conn: sqlite3.Connection, url_csv: str):
             # Atualiza se valor ou quantidade_inicial (do CSV) for diferente
             # Não vamos zerar o estoque atual, apenas a "quantidade de referência" do CSV
             if produto_existente["valor"] != valor_produto_csv or produto_existente["quantidade_estoque"] != quantidade_produto_csv:
-                 # Aqui, a decisão de como atualizar o estoque é importante.
-                 # Se o CSV é a "fonte da verdade" para a quantidade inicial, podemos resetar.
-                 # Mas se vendas já ocorreram, resetar direto para a quantidade do CSV pode ser problemático.
-                 # Uma abordagem: se o CSV indica uma quantidade e o estoque atual é menor devido a vendas,
-                 # não fazemos nada com a quantidade_estoque, apenas atualizamos o valor.
-                 # Se o CSV tem uma quantidade maior, podemos ajustar o estoque para cima.
-                 # Por simplicidade, vamos atualizar valor e quantidade_estoque PARA A QUANTIDADE DO CSV
-                 # Esta lógica pode precisar de ajuste fino dependendo do fluxo desejado.
                 cursor.execute(
                     "UPDATE produtos SET valor = ?, quantidade_estoque = ? WHERE nome = ?",
                     (valor_produto_csv, quantidade_produto_csv, nome_produto_csv)
@@ -139,7 +130,6 @@ def sincronizar_csv_com_bd(conn: sqlite3.Connection, url_csv: str):
 
 
 # --- Funções de Negócio (Adaptadas para Banco de Dados) ---
-
 @st.cache_data(show_spinner="Buscando produtos...") # Adiciona cache para leituras frequentes
 def get_produtos_do_bd(conn: sqlite3.Connection) -> list:
     """Retorna uma lista de todos os produtos do BD."""
