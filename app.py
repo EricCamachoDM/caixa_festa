@@ -8,7 +8,7 @@ import psycopg2.extras # Para DictCursor
 import os
 
 # --- Configurações e Constantes ---
-APP_TITLE = "Controle de Estoque e Caixa (Supabase)"
+APP_TITLE = "Festa da Macarronada 2025 - Luz do Oriente"
 GITHUB_CSV_URL = "https://raw.githubusercontent.com/EricCamachoDM/caixa_festa/main/produtos_estoque.csv"
 
 # --- Obter DATABASE_URL ---
