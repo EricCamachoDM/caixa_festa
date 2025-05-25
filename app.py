@@ -317,9 +317,10 @@ if not db_conn:
 else:
     criar_tabelas_se_nao_existirem() # Chama a função que usa a conexão global
 
-    if st.sidebar.button("🔄 Sincronizar Produtos do CSV com o Banco de Dados"):
-        sincronizar_csv_com_bd(GITHUB_CSV_URL)
-        st.rerun()
+    # DESCOMENTAR
+    #if st.sidebar.button("🔄 Sincronizar Produtos do CSV com o Banco de Dados"):
+    #    sincronizar_csv_com_bd(GITHUB_CSV_URL)
+    #    st.rerun()
 
     # Verificar se a tabela de produtos está vazia
     count_result = run_query("SELECT COUNT(*) FROM produtos", fetch_one=True)
