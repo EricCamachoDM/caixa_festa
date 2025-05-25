@@ -7,7 +7,7 @@ from datetime import datetime # Para registrar o horário da venda
 # --- Configurações e Constantes ---
 APP_TITLE = "Controle de Estoque e Caixa para Festa Macarronada"
 
-GITHUB_CSV_URL = "https://github.com/EricCamachoDM/caixa_festa/blob/main/produtos_estoque.csv" 
+GITHUB_CSV_URL = "https://raw.githubusercontent.com/EricCamachoDM/caixa_festa/refs/heads/main/produtos_estoque.csv" 
 
 # --- Funções Auxiliares ---
 
