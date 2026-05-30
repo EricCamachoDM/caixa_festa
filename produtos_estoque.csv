@@ -1,11 +1,12 @@
 nome,valor,quantidade
-Coca Normal,6.0,96
-Coca Zero,6.0,96
-Soda,6.0,12
+Coca Normal,6.0,72
+Coca Zero,6.0,72
 Guaraná Zero,6.0,12
 Guaraná Normal,6.0,36
-Heineken,8.0,112
-Água Normal,4.0,60
-Água com Gás,5.0,12
-Suco,7.0,24
-Café,5.0,30
+Cerveja,8.0,60
+Água Normal,4.0,48
+Água com Gás,4.0,12
+Suco,5.0,36
+Café,5.0,50
+Paçoca, 2.0,100
+Mini Alfajor,10.0,50
