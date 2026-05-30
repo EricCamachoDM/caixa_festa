@@ -8,7 +8,7 @@ import psycopg2.extras # Para DictCursor
 import os
 
 # --- Configurações e Constantes ---
-APP_TITLE = "Festa da Macarronada 2025 - Luz do Oriente"
+APP_TITLE = "Festa da Macarronada 2026 - Luz do Oriente"
 GITHUB_CSV_URL = "https://raw.githubusercontent.com/EricCamachoDM/caixa_festa/main/produtos_estoque.csv"
 
 # --- Obter DATABASE_URL ---
@@ -318,9 +318,9 @@ else:
     criar_tabelas_se_nao_existirem() # Chama a função que usa a conexão global
 
     # DESCOMENTAR
-    #if st.sidebar.button("🔄 Sincronizar Produtos do CSV com o Banco de Dados"):
-    #    sincronizar_csv_com_bd(GITHUB_CSV_URL)
-    #    st.rerun()
+    if st.sidebar.button("🔄 Sincronizar Produtos do CSV com o Banco de Dados"):
+        sincronizar_csv_com_bd(GITHUB_CSV_URL)
+        st.rerun()
 
     # Verificar se a tabela de produtos está vazia
     count_result = run_query("SELECT COUNT(*) FROM produtos", fetch_one=True)
