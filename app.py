@@ -163,15 +163,6 @@ def adicionar_produto_bd(nome: str, valor: float, quantidade: int):
         st.success(f"Produto '{nome}' adicionado.")
         limpar_caches_de_dados()
         # Não precisa de st.error aqui, run_query já trata e st.toast pode ser usado para feedback de erro de UNIQUE
-
-def limpar_formulario_venda():
-    """Zera todos os campos do formulário de venda."""
-    produtos = get_produtos_do_bd()
-
-    for produto in produtos:
-        chave = f"venda_bd_form_{produto['nome']}"
-        if chave in st.session_state:
-            st.session_state[chave] = 0
             
 def deletar_produto_bd(nome_produto: str):
     produto_info = run_query("SELECT id FROM produtos WHERE nome = %s", (nome_produto,), fetch_one=True)
@@ -393,7 +384,6 @@ else:
                                 f"Venda ID {venda_id_registrada} registrada! "
                                 f"Valor: R${valor_total_registrado:.2f}"
                             )
-                            limpar_formulario_venda()
                             st.rerun()
                     else:
                         st.warning("Nenhum produto selecionado ou quantidade inválida.")
