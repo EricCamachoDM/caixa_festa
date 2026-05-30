@@ -164,6 +164,15 @@ def adicionar_produto_bd(nome: str, valor: float, quantidade: int):
         limpar_caches_de_dados()
         # Não precisa de st.error aqui, run_query já trata e st.toast pode ser usado para feedback de erro de UNIQUE
 
+def limpar_formulario_venda():
+    """Zera todos os campos do formulário de venda."""
+    produtos = get_produtos_do_bd()
+
+    for produto in produtos:
+        chave = f"venda_bd_form_{produto['nome']}"
+        if chave in st.session_state:
+            st.session_state[chave] = 0
+            
 def deletar_produto_bd(nome_produto: str):
     produto_info = run_query("SELECT id FROM produtos WHERE nome = %s", (nome_produto,), fetch_one=True)
     if not produto_info:
@@ -358,7 +367,10 @@ else:
         if not produtos_para_venda_bd_tab2:
             st.warning("Não há produtos cadastrados para registrar uma venda.")
         else:
-            with st.form(key='registrar_venda_form_bd'): # Chave única
+            with st.form(
+                key='registrar_venda_form_bd',
+                clear_on_submit=True
+            ):
                 input_produtos_para_venda_dict = {}
                 for produto_info in produtos_para_venda_bd_tab2:
                     if produto_info["quantidade_estoque"] > 0:
@@ -376,10 +388,13 @@ else:
                         venda_id_registrada, valor_total_registrado = registrar_venda_bd(
                             input_produtos_para_venda_dict
                         )
-                        if venda_id_registrada is not None: # Verificar se não é None
-                            st.success(f"Venda ID {venda_id_registrada} registrada! Valor: R${valor_total_registrado:.2f}")
+                        if venda_id_registrada is not None:
+                            st.success(
+                                f"Venda ID {venda_id_registrada} registrada! "
+                                f"Valor: R${valor_total_registrado:.2f}"
+                            )
+                            limpar_formulario_venda()
                             st.rerun()
-                        # else: O erro já foi mostrado dentro de registrar_venda_bd
                     else:
                         st.warning("Nenhum produto selecionado ou quantidade inválida.")
 
