@@ -405,8 +405,7 @@ else:
                             f"Venda ID {venda_id_registrada} registrada! "
                             f"Valor: R${valor_total_registrado:.2f}"
                         )
-                        for produto_info in produtos_para_venda_bd_tab2:
-                            st.session_state[f"venda_{produto_info['id']}"] = 0
+    
         
                         st.rerun()
 
