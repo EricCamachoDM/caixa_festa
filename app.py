@@ -354,40 +354,63 @@ else:
 
     with tab2:
         st.subheader("Registrar Nova Venda")
+
         produtos_para_venda_bd_tab2 = get_produtos_do_bd()
+
         if not produtos_para_venda_bd_tab2:
             st.warning("Não há produtos cadastrados para registrar uma venda.")
         else:
-            with st.form(
-                key='registrar_venda_form_bd',
-                clear_on_submit=True
-            ):
-                input_produtos_para_venda_dict = {}
-                for produto_info in produtos_para_venda_bd_tab2:
-                    if produto_info["quantidade_estoque"] > 0:
-                        quantidade_selecionada = st.number_input(
-                            f"{produto_info['nome']} (Estoque: {produto_info['quantidade_estoque']}, "
-                            f"Valor: R${produto_info['valor']:.2f})",
-                            min_value=0, max_value=produto_info["quantidade_estoque"], step=1,
-                            key=f"venda_bd_form_{produto_info['nome']}" # Chave única
-                        )
-                        if quantidade_selecionada > 0:
-                            input_produtos_para_venda_dict[produto_info['nome']] = quantidade_selecionada
-                submit_venda_bd = st.form_submit_button("Registrar Venda")
-                if submit_venda_bd:
-                    if input_produtos_para_venda_dict:
-                        venda_id_registrada, valor_total_registrado = registrar_venda_bd(
-                            input_produtos_para_venda_dict
-                        )
-                        if venda_id_registrada is not None:
-                            st.success(
-                                f"Venda ID {venda_id_registrada} registrada! "
-                                f"Valor: R${valor_total_registrado:.2f}"
-                            )
-                            st.rerun()
-                    else:
-                        st.warning("Nenhum produto selecionado ou quantidade inválida.")
 
+            # Calcula total em tempo real
+            valor_parcial = 0
+
+            st.markdown("### 🧾 Resumo do Pedido")
+
+            input_produtos_para_venda_dict = {}
+
+            for produto_info in produtos_para_venda_bd_tab2:
+                if produto_info["quantidade_estoque"] > 0:
+
+                    qtd = st.number_input(
+                        f"{produto_info['nome']} "
+                        f"(Estoque: {produto_info['quantidade_estoque']}, "
+                        f"Valor: R${produto_info['valor']:.2f})",
+                        min_value=0,
+                        max_value=produto_info["quantidade_estoque"],
+                        step=1,
+                        key=f"venda_{produto_info['id']}"
+                    )
+
+                    if qtd > 0:
+                        input_produtos_para_venda_dict[produto_info["nome"]] = qtd
+                        valor_parcial += qtd * produto_info["valor"]
+
+            # Destaque visual do total
+            st.metric(
+                label="💰 Total da Compra",
+                value=f"R$ {valor_parcial:.2f}"
+            )
+
+            st.divider()
+
+            if st.button("✅ Registrar Venda"):
+                if input_produtos_para_venda_dict:
+
+                    venda_id_registrada, valor_total_registrado = registrar_venda_bd(
+                        input_produtos_para_venda_dict
+                    )
+
+                    if venda_id_registrada:
+                        st.success(
+                            f"Venda ID {venda_id_registrada} registrada! "
+                            f"Valor: R${valor_total_registrado:.2f}"
+                        )
+                        st.rerun()
+
+                else:
+                    wst.warning("Nenhum produto selecionado.")
+
+    
     with tab3:
         st.subheader("Histórico de Vendas")
         vendas_registradas_bd = get_vendas_do_bd()
